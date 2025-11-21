@@ -1,7 +1,7 @@
-# DrugTrade Simulator
+# Billionaire Mindset - Investment Empire
 
 ## Overview
-DrugTrade Simulator is an interactive browser-based economic simulation game that models the dynamics of an underground market economy. The player navigates a fictional world of trading various illicit substances while managing inventory, bankroll, and risk factors like police raids and robber encounters.
+Billionaire Mindset - Investment Empire is an interactive browser-based economic simulation game that models the dynamics of high-stakes investment trading. The player navigates a world of luxury investments, managing a diverse portfolio of premium assets while building wealth across global financial hubs. Navigate market volatility, manage risk, and build your investment empire to achieve billionaire status.
 
 ## Installation and Setup
 
@@ -21,77 +21,87 @@ The game includes PWA capabilities:
 - Installable on mobile devices
 - Service worker for offline functionality
 - Responsive design for various screen sizes
+- Auto-save functionality to preserve your progress
 
 ## Features
 - **Dynamic Market Economy**: Prices fluctuate based on supply, demand, and location
-- **Multiple Cities**: Travel between different locations with unique market conditions
-- **Banking System**: Store money safely to earn interest and avoid robberies
-- **Loan System**: Borrow money for investment opportunities
-- **Protection Mechanics**: Purchase guns to defend against robbers
-- **Random Events**: Encounter police raids and robbers during gameplay
-- **AI Trading Bot**: Advanced reinforcement learning bot that can play the game autonomously
+- **Global Financial Hubs**: Travel between luxury cities with unique market conditions
+- **Private Banking System**: Store money safely to earn interest and protect assets
+- **Investment Partners & Lenders**: Access capital through strategic partnerships
+- **Security System**: Hire security to protect against market manipulation
+- **Random Events**: Encounter IRS audits and market manipulation attempts during gameplay
+- **AI Trading Bot**: Advanced reinforcement learning bot that can manage your portfolio autonomously
 
 ## Game Mechanics
 
 ### Core Gameplay
-The game revolves around buying products at low prices and selling them at higher prices to accumulate wealth. Players have a limited number of days (default 30) to maximize their net worth.
+The game revolves around buying premium assets at low prices and selling them at higher prices to accumulate wealth. Players have a limited number of days (default 30) to maximize their net worth and achieve billionaire status.
 
-- **Buy/Sell**: Purchase products when prices are low, sell when prices are high
-- **Travel**: Move between cities to find better market conditions
-- **Bank**: Deposit or withdraw money from the bank for safekeeping
-- **Loans**: Borrow money to increase purchasing power
-- **Protection**: Buy guns to defend against robbers
+- **Buy/Sell**: Purchase assets when prices are low, sell when prices are high
+- **Travel**: Move between global financial hubs to find better market conditions
+- **Bank**: Deposit or withdraw money from private wealth management accounts
+- **Loans**: Access capital through investment partners for larger opportunities
+- **Security**: Hire security to protect against market manipulation and competitor attacks
 
 ### Products and Cities
-The game features various products with different value ranges:
+The game features various premium investment assets with different value ranges:
 
-**Products:**
-- Acid (LSD): Generally lower value, high volatility
-- Coke (Cocaine): High value, medium volatility
-- Heroin: Very high value, low volatility
-- Speed (Methamphetamine): Medium value, high volatility
-- Weed (Marijuana): Low value, low volatility
-- MDMA (Ecstasy): Medium value, medium volatility
+**Investment Assets:**
+- **Real Estate**: High-value property investments ($560,000 - $1,000,000), stable with market trends
+- **Crypto**: Cryptocurrency assets ($28,000 - $50,000), high volatility
+- **Fine Art**: Collectible art pieces ($25,000 - $50,000), medium volatility
+- **Gold Bars**: Precious metal investments ($55,000 - $100,000), stable store of value
+- **Tech Stocks**: Technology company equities ($61,000 - $100,000), growth-focused volatility
 
-**Cities:**
-- New York: Balanced market, moderate prices
-- Miami: High demand for expensive products
-- Los Angeles: Tech-focused with specific product preferences
-- Chicago: Industrial hub with unique market dynamics
-- Detroit: Lower-income area with different pricing patterns
-- Boston: Academic center with specific demand patterns
+**Global Financial Hubs:**
+- **Silicon Valley**: Tech-focused market with premium tech stock opportunities
+- **Monaco**: Luxury real estate and fine art hub
+- **Dubai**: Emerging market with diverse investment opportunities
+- **Singapore**: Asian financial center with balanced markets
+- **Zurich**: Private banking capital with stable gold markets
+- **Hong Kong**: Gateway to Asian markets with high liquidity
+- **Shanghai**: Emerging market with growth opportunities
+- **Beverly Hills**: Luxury real estate and high-end investments
+- **Geneva**: Private wealth management center
+- **Luxembourg**: European financial hub
+- **Manhattan**: Premium real estate and financial services
+- **Mumbai**: Emerging market opportunities
+- **São Paulo**: Latin American investment gateway
+- **Cairo**: Middle Eastern market access
+- **Moscow**: Eastern European opportunities
+- **Amsterdam**: European trading hub
 
-Each city has unique pricing factors that affect the products differently, encouraging travel and exploration.
+Each city has unique pricing factors that affect the assets differently, encouraging strategic travel and market exploration.
 
 ### Random Events
 Random events occur throughout gameplay to add risk and unpredictability:
 
-#### Police Raids
+#### IRS Audits
 ```javascript
 function policeRaid() {
-    // Police may confiscate products or be fought off with guns
+    // IRS may audit your portfolio or be defended with proper security
     // Affects inventory and game statistics
 }
 ```
 
-#### Robber Encounters
+#### Market Manipulation / Competitor Attacks
 ```javascript
 function robbers() {
-    // Robbers may steal money or products unless player has guns
+    // Competitors may attempt market manipulation unless you have security
     // Updates game statistics and tracks successful defenses
 }
 ```
 
 ### Market System
 The market operates with dynamic pricing that changes based on:
-- Current city
-- Random fluctuations
-- Product type
-- Special events
+- Current financial hub
+- Random market fluctuations
+- Asset type and class
+- Special market events
 
 ```javascript
 function updatePrices() {
-    // Generates new random prices for all products
+    // Generates new random prices for all assets
     // Takes into account city-specific price factors
 }
 
@@ -103,7 +113,7 @@ function isExceptionalPrice(buyPrice, sellPrice, productKey) {
 
 ## AI Trading Bot
 
-The game includes a sophisticated AI trading bot that uses reinforcement learning to play the game autonomously.
+The game includes a sophisticated AI trading bot that uses reinforcement learning to manage your investment portfolio autonomously.
 
 ### Bot Architecture
 The bot is implemented as a class with multiple methods for different aspects of gameplay:
@@ -214,15 +224,15 @@ loadQTables() {
 ### Trading Strategies
 The bot employs different strategies based on market conditions and game state:
 
-1. **URGENT LIQUIDATION**: Sell inventory quickly when the game is ending
-2. **ACTIVE LIQUIDATION**: Gradually sell inventory as the game progresses
+1. **URGENT LIQUIDATION**: Sell assets quickly when the game is ending
+2. **ACTIVE LIQUIDATION**: Gradually sell assets as the game progresses
 3. **PREPARATION PHASE**: Initial exploration and planning
-4. **MARKET EXPLORATION**: Test different products and markets to gather data
-5. **PROFIT TAKING**: Sell products at high prices to secure profits
-6. **INVENTORY BUILDING**: Purchase products at low prices to build inventory
+4. **MARKET EXPLORATION**: Test different assets and markets to gather data
+5. **PROFIT TAKING**: Sell assets at high prices to secure profits
+6. **INVENTORY BUILDING**: Purchase assets at low prices to build portfolio
 7. **EMERGENCY RECOVERY**: Actions when bankroll is critically low
-8. **ACQUIRING PROTECTION**: Purchase guns when facing significant threats
-9. **MARKET ANALYSIS**: Analyze price patterns across cities
+8. **ACQUIRING PROTECTION**: Hire security when facing significant threats
+9. **MARKET ANALYSIS**: Analyze price patterns across financial hubs
 10. **SEEKING SELL OPPORTUNITIES**: Look for optimal selling conditions
 11. **PROFIT OPTIMIZATION**: Balance buying and selling for maximum returns
 
@@ -231,7 +241,7 @@ The bot uses intelligent batch sizing for both buying and selling:
 
 ```javascript
 const getBatchSize = (inventory) => {
-    // Determines optimal quantities to sell based on inventory size
+    // Determines optimal quantities to sell based on portfolio size
     // Adjusts based on game progress and exploration needs
     if (inventory <= 10) return inventory; // Sell all if small amount
     if (inventory <= 100) return Math.ceil(inventory * 0.5); // Sell half if medium
@@ -241,7 +251,7 @@ const getBatchSize = (inventory) => {
 
 const getBuyBatchSize = (maxAffordable, price) => {
     // Calculates reasonable batch sizes for buying
-    // Ensures bot doesn't spend all its money at once
+    // Ensures bot doesn't spend all its capital at once
     if (maxAffordable <= 10) return maxAffordable;
     if (maxAffordable <= 50) return Math.ceil(maxAffordable * 0.8);
     if (maxAffordable <= 200) return Math.ceil(maxAffordable * 0.5);
@@ -255,10 +265,10 @@ const getBuyBatchSize = (maxAffordable, price) => {
 ### Game Container
 The main game interface displays:
 - Bankroll and days remaining
-- Inventory status
-- Current city
-- Protection level (guns)
-- Market prices for products
+- Portfolio status (inventory)
+- Current financial hub
+- Security level (guards)
+- Market prices for assets
 - Action buttons (Buy, Sell, Travel, Bank, Loan)
 
 ### Console Log
@@ -298,7 +308,7 @@ When the game ends, a detailed results screen shows:
 - Final net worth
 - Cash on hand
 - Bank balance
-- Inventory value
+- Portfolio value
 - Outstanding loans
 - Gameplay statistics
 - AI performance metrics
@@ -320,7 +330,7 @@ function formatTime(totalSeconds) {
 ```
 
 ## Banking System
-The banking system allows safe money storage with interest:
+The private banking system allows safe money storage with interest:
 
 ```javascript
 function deposit(amount) {
@@ -335,12 +345,12 @@ function withdraw(amount) {
 
 function accrueInterest() {
     // Adds interest to bank balance periodically
-    // Interest rate is configurable
+    // Interest rate is configurable (8% APY)
 }
 ```
 
 ## Loan System
-The loan system provides additional funding options:
+The investment partners & lenders system provides additional funding options:
 
 ```javascript
 function takeLoan(amount) {
@@ -355,13 +365,13 @@ function payLoan(amount) {
 }
 ```
 
-## Protection System
-Players can buy guns for protection:
+## Security System
+Players can hire security to protect against market manipulation:
 
 ```javascript
 function buyGun() {
-    // Purchases a gun for protection
-    // Reduces cash by gun price
+    // Hires security for protection
+    // Reduces cash by security cost
     // Updates protection status
     // Affects outcomes of random events
 }
@@ -386,16 +396,16 @@ The game offers several configuration options that can be adjusted in the code:
 ```javascript
 // Initial game settings
 const gameConfig = {
-    startingBankroll: 2000,        // Starting cash
-    gameDuration: 30,              // Days
-    maxInventory: 10000,           // Max items per product
-    interestRate: 0.05,            // Daily bank interest rate
-    loanInterestRate: 0.1,         // Daily loan interest rate
-    maxLoan: 10000000,             // Maximum loan amount
-    gunPrice: 500,                 // Cost of a gun
-    eventProbability: 0.15,        // Chance of random event
-    priceVolatility: 0.3,          // Price change magnitude
-    cityTravelCost: 100            // Base cost to travel
+    startingBankroll: 1000000,      // Starting capital
+    gameDuration: 30,               // Days
+    maxInventory: 10000,            // Max items per asset
+    interestRate: 0.08,             // Annual bank interest rate (8% APY)
+    loanInterestRate: 0.15,         // Annual loan interest rate (15% APY)
+    maxLoan: 10000000,              // Maximum loan amount
+    securityPrice: 500,             // Cost to hire security
+    eventProbability: 0.15,         // Chance of random event
+    priceVolatility: 0.3,           // Price change magnitude
+    cityTravelCost: 100             // Base cost to travel
 };
 ```
 
@@ -444,6 +454,7 @@ function loadGameState() {
 function saveGameState() {
     // Saves current game state to localStorage
     // Stores all game parameters for future restoration
+    // Auto-saves every 30 seconds and on key actions
 }
 ```
 
@@ -458,12 +469,12 @@ function trackDays() {
 
 function randomEvent() {
     // Randomly selects and executes an event
-    // Chooses between police raids and robber encounters
+    // Chooses between IRS audits and market manipulation attempts
     // Probability affected by city and other factors
 }
 
 function updatePrices() {
-    // Regenerates all product prices
+    // Regenerates all asset prices
     // Applies city-specific modifiers
     // Occasionally creates exceptional price opportunities
 }
@@ -479,7 +490,7 @@ function buyProduct() {
 
 function sellProduct() {
     // Handles player selling attempts
-    // Validates product selection and quantity
+    // Validates asset selection and quantity
     // Updates inventory, bankroll, and UI
 }
 
@@ -493,7 +504,7 @@ function isExceptionalPrice(buyPrice, sellPrice, productKey) {
 #### Travel System
 ```javascript
 function travel() {
-    // Moves player to a different city
+    // Moves player to a different financial hub
     // Deducts travel cost
     // Updates prices based on new location
     // Triggers possible random events
@@ -529,7 +540,7 @@ function accrueInterest() {
 }
 
 function calculateTotalInventoryValue() {
-    // Sums the value of all inventory items at current prices
+    // Sums the value of all portfolio assets at current prices
     // Used for net worth calculations and bot decisions
 }
 ```
@@ -647,16 +658,15 @@ calculateStrategyReward() {
 ## Troubleshooting
 
 ### Common Issues
-- **Game Not Saving**: Clear browser cache and check localStorage permissions
+- **Game Not Saving**: Clear browser cache and check localStorage permissions. Use `clearAppCache()` in console if needed.
 - **AI Not Learning**: Try resetting AI data using the "Reset AI" option
 - **Performance Issues**: Reduce log entries and limit bot action frequency
-- **UI Glitches**: Refresh the page or check browser compatibility 
+- **UI Glitches**: Refresh the page or check browser compatibility
+- **Service Worker Cache Issues**: Do a hard refresh (Ctrl+Shift+R or Cmd+Shift+R) to clear cached files
 
+## Contributing
 
-##GITHUB
-
-### Contributing
-Contributions to the DrugTrade Simulator are welcome! If you're interested in contributing:
+Contributions to Billionaire Mindset - Investment Empire are welcome! If you're interested in contributing:
 
 1. Fork the repository
 2. Create a feature branch for your changes
@@ -664,9 +674,9 @@ Contributions to the DrugTrade Simulator are welcome! If you're interested in co
 
 ## Disclaimer
 
-**Educational Purpose**: DrugTrade Simulator is a fictional simulation game created for educational and entertainment purposes only. The game emphasizes the role of randomness, chance, and risk in economic decision making, and showcases the dynamic nature of goals and pace dynamics with reinforcement learning in a highly volatile environment.
+**Educational Purpose**: Billionaire Mindset - Investment Empire is a fictional simulation game created for educational and entertainment purposes only. The game emphasizes the role of randomness, chance, and risk in economic decision making, and showcases the dynamic nature of goals and pace dynamics with reinforcement learning in a highly volatile environment.
 
-**No Endorsement**: This simulation does not promote, endorse, or encourage illegal activities in any way. The subject matter is treated as a purely fictional numbers exercise.
+**No Financial Advice**: This simulation does not provide financial advice, investment recommendations, or real-world trading strategies. All market dynamics, prices, and events are fictional and for entertainment purposes only.
 
 **Technical Exercise**: The primary focus of this project is to demonstrate programming concepts including:
 - Vanilla JavaScript application architecture
@@ -674,7 +684,8 @@ Contributions to the DrugTrade Simulator are welcome! If you're interested in co
 - Dynamic UI management
 - Local storage utilization
 - Progressive web app capabilities
+- Service worker implementation
 
 ---
 
-© 2023 DrugTrade Simulator | Released under MIT License 
+© 2024 Billionaire Mindset - Investment Empire | Released under MIT License
