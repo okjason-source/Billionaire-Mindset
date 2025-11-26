@@ -21,6 +21,7 @@ console.log("Script loaded successfully");
         const clearLogsBtn = document.getElementById('clear-logs');
         const resetAIBtn = document.getElementById('reset-ai');
         const toggleConsoleBtn = document.getElementById('toggle-console');
+        const toggleAsciiBtn = document.getElementById('toggle-ascii');
         const logFilter = document.getElementById('log-filter');
         const consoleContent = document.getElementById('console-log-content');
         const consoleContainer = document.getElementById('console-log-container');
@@ -36,6 +37,23 @@ console.log("Script loaded successfully");
             resetAIBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 resetAI();
+            });
+        }
+        
+        // Initialize ASCII art toggle button
+        if (toggleAsciiBtn) {
+            // Set initial button text based on saved state
+            // Access global variable explicitly
+            const currentState = window.asciiArtEnabled !== undefined ? window.asciiArtEnabled : (localStorage.getItem('asciiArtEnabled') !== 'false');
+            window.asciiArtEnabled = currentState;
+            toggleAsciiBtn.textContent = window.asciiArtEnabled ? 'ASCII: ON' : 'ASCII: OFF';
+            
+            toggleAsciiBtn.addEventListener('click', function() {
+                window.asciiArtEnabled = !window.asciiArtEnabled;
+                asciiArtEnabled = window.asciiArtEnabled; // Update the global variable
+                localStorage.setItem('asciiArtEnabled', window.asciiArtEnabled.toString());
+                toggleAsciiBtn.textContent = window.asciiArtEnabled ? 'ASCII: ON' : 'ASCII: OFF';
+                console.log('ASCII art toggled:', window.asciiArtEnabled ? 'ON' : 'OFF');
             });
         }
         
@@ -307,6 +325,13 @@ let gameStats = {
 //// Each in-game day lasts 24 real-time seconds - travel(6h=6s)
 let botEnabled = false;
 let botTrainingInterval = null;
+
+// ASCII art toggle state (default: enabled)
+let asciiArtEnabled = localStorage.getItem('asciiArtEnabled') !== 'false';
+// Make it accessible on window object for easier access
+if (typeof window !== 'undefined') {
+    window.asciiArtEnabled = asciiArtEnabled;
+}
                             
 let inventory = {
     realEstate: 0,
@@ -402,6 +427,8 @@ function saveGameState() {
             inventory: inventory,
             currentProduct: currentProduct,
             transactionCount: transactionCount, // Save transaction count
+            visitedCities: visitedCities || [], // Save visited cities
+            citiesVisitedCount: citiesVisitedCount || 0, // Save cities visited count
             botState: tradingBot ? tradingBot.saveState() : null,
             botEnabled: botEnabled !== undefined ? botEnabled : true, 
             botTrainingInterval: botTrainingInterval ? true : false
@@ -644,6 +671,17 @@ function travel() {
         const oldCity = city;
         city = newCity;
         logEvent(`You traveled from ${oldCity} to ${city}`, "travel");
+        
+        // Track cities visited (count unique cities)
+        if (!visitedCities.includes(newCity)) {
+            visitedCities.push(newCity);
+            citiesVisitedCount = visitedCities.length;
+            // Also update gameStats for consistency
+            if (gameStats) {
+                gameStats.citiesVisited = citiesVisitedCount;
+            }
+        }
+        
         saveGameState(); // Save state after travel
     
     // Add one of the engaging travel messages about the new city
@@ -1412,6 +1450,22 @@ function loadGameState() {
             if (gameState.inventory !== undefined) inventory = gameState.inventory;
             if (gameState.transactionCount !== undefined) transactionCount = gameState.transactionCount;
             if (gameState.currentProduct !== undefined) currentProduct = gameState.currentProduct;
+            // Restore cities visited data
+            if (gameState.visitedCities !== undefined && Array.isArray(gameState.visitedCities)) {
+                visitedCities = gameState.visitedCities;
+            } else {
+                // Initialize with starting city if not found
+                visitedCities = ["Silicon Valley"];
+            }
+            if (gameState.citiesVisitedCount !== undefined) {
+                citiesVisitedCount = gameState.citiesVisitedCount;
+            } else {
+                citiesVisitedCount = visitedCities.length;
+            }
+            // Update gameStats to match
+            if (gameStats) {
+                gameStats.citiesVisited = citiesVisitedCount;
+            }
 
             console.log('Game state loaded successfully:', {
                 bankroll,
@@ -1451,6 +1505,13 @@ function initializeDefaultGameState() {
     }, {});
     transactionCount = 0;
     
+    // Initialize cities visited with starting city
+    visitedCities = ["Silicon Valley"];
+    citiesVisitedCount = 1;
+    if (gameStats) {
+        gameStats.citiesVisited = 1;
+    }
+    
     // Save the initial state
     saveGameState();
 }
@@ -1485,6 +1546,10 @@ function startNewGame() {
     robberEncountersCount = 0;
     successfulDefensesCount = 0;
     
+    // Initialize starting city as visited
+    visitedCities.push("Silicon Valley");
+    citiesVisitedCount = 1;
+    
     // Reset the bot's exploration rate for the new game
     if (window.bot && typeof window.bot.resetForNewGame === 'function') {
         window.bot.resetForNewGame();
@@ -1496,7 +1561,7 @@ function startNewGame() {
         policeRaids: 0,
         robberEncounters: 0,
         successfulDefenses: 0,
-        citiesVisited: 0,
+        citiesVisited: 1, // Starting city counts as visited
         totalTrades: 0
     };
     
@@ -2055,6 +2120,10 @@ function startNewGame() {
     robberEncountersCount = 0;
     successfulDefensesCount = 0;
     
+    // Initialize starting city as visited
+    visitedCities.push("Silicon Valley");
+    citiesVisitedCount = 1;
+    
     // Reset the bot's exploration rate for the new game
     if (window.bot && typeof window.bot.resetForNewGame === 'function') {
         window.bot.resetForNewGame();
@@ -2066,7 +2135,7 @@ function startNewGame() {
         policeRaids: 0,
         robberEncounters: 0,
         successfulDefenses: 0,
-        citiesVisited: 0,
+        citiesVisited: 1, // Starting city counts as visited
         totalTrades: 0
     };
     
@@ -2105,8 +2174,8 @@ const currencyAsciiArt = [
 ║          ║     ║       MINDSET         ║     ║        ║
 ║          ║     ║                       ║     ║        ║
 ║          ║     ║                       ║     ║        ║
-║          ║     ║      DON'T GET        ║     ║        ║
-║          ║     ║       FLOCKED!        ║     ║        ║
+║          ║     ║      TAP THAT         ║     ║        ║
+║          ║     ║    FOLLOW BUTTON!     ║     ║        ║
 ║          ║     ║                       ║     ║        ║
 ║          ║     ╚═══════════════════════╝     ║        ║
 ║          ║                                   ║        ║
@@ -2116,7 +2185,29 @@ const currencyAsciiArt = [
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
 `,
-    // Add more currency ASCII art here in the future
+`
+╔═══════════════════════════════════════════════════════╗
+║                                                       ║
+║                                                       ║
+║          ╔═══════════════════════════════════╗        ║
+║          ║                                   ║        ║
+║          ║     ╔═══════════════════════╗     ║        ║
+║          ║     ║                       ║     ║        ║
+║          ║     ║                       ║     ║        ║
+║          ║     ║   BRAIN IS CURRENCY.  ║     ║        ║
+║          ║     ║                       ║     ║        ║
+║          ║     ║   STACK YOUR WISDOM!  ║     ║        ║
+║          ║     ║                       ║     ║        ║
+║          ║     ║                       ║     ║        ║
+║          ║     ╚═══════════════════════╝     ║        ║
+║          ║                                   ║        ║
+║          ╚═══════════════════════════════════╝        ║
+║                                                       ║
+║              $$$$$$$$$$$$$$$$$$$$$$$$$$$$             ║
+║                                                       ║
+╚═══════════════════════════════════════════════════════╝
+`,// Add more currency ASCII art here in the future
+
 ];
 
 // Define the ASCII art images - Billionaire Mindset Theme
@@ -2127,9 +2218,9 @@ const carAsciiArt = `
 ║          $                                    $       ║
 ║          $      Accelerate your Mindset!      $       ║
 ║          $                                    $       ║
-║          $     ╔═══════════════════════════╗  $       ║
-║          $     ║  BILLIONAIRE'S RIDE       ║  $       ║
-║          $     ╚═══════════════════════════╝  $       ║
+║          $     ╔═════════════════════════╗    $       ║
+║          $     ║       Let's Ride!       ║    $       ║
+║          $     ╚═════════════════════════╝    $       ║
 ║          $                                    $       ║
 ║          $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$       ║
 ╚═══════════════════════════════════════════════════════╝
@@ -2143,7 +2234,7 @@ const trainAsciiArt = `
 ║          $        Positive Vibes Only         $       ║
 ║          $                                    $       ║
 ║          $         ╔═══════════════╗          $       ║
-║          $         ║   MANSION     ║          $       ║
+║          $         ║   CASH RAIN!  ║          $       ║
 ║          $         ╚═══════════════╝          $       ║
 ║          $                                    $       ║
 ║          $   Shiba Inus|Ostrich|Money Mascot  $       ║
@@ -2159,13 +2250,42 @@ const planeAsciiArt = `
 ║          $                                    $       ║
 ║          $         Sponsored by Vibes         $       ║
 ║          $                                    $       ║
-║          $         ╔═══════════════╗          $       ║
-║          $         ║  BILLIONAIRE  ║          $       ║
-║          $         ║     JET       ║          $       ║
-║          $         ╚═══════════════╝          $       ║
+║          $        ╔═══════════════════╗       $       ║
+║          $        ║  BILLIONAIRE JET  ║       $       ║
+║          $        ╚═══════════════════╝       $       ║
 ║          $                                    $       ║
 ║          $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$       ║
 ╚═══════════════════════════════════════════════════════╝
+`;
+
+const compoundInterestAsciiArt = `
+┌──────────────────────────────────────────────────────────┐
+                                                          
+    👑💵  LISTEN TO THE SOUND OF COMPOUND INTEREST  💵👑   
+                                                           
+                   💎🪙  💰  💵  💰  🪙💎                   
+                                                          
+└──────────────────────────────────────────────────────────┘
+`;
+
+const mintIdeasAsciiArt = `
+┌────────────────────────────────┐
+                                
+    💰✨  MINT YOUR IDEAS  ✨💰   
+                                
+     🪙💎   💵  👑  💵   💎🪙   
+                                
+└────────────────────────────────┘
+`;
+
+const dontGetFlockedAsciiArt = `
+┌──────────────────────────────────────────┐
+                                          
+      💎💰💵  DON'T GET FLOCKED  💵💰💎     
+                                           
+     ♦ ♦ ♦   👑  $$$  🪙  $$$  👑   ♦ ♦ ♦  
+                                          
+└──────────────────────────────────────────┘
 `;
 
 
@@ -2238,6 +2358,25 @@ function addTypewriterEffect(preElement, originalText) {
 }
 
 function showAsciiArt(artType) {
+    // Skip displaying ASCII art if disabled via toggle
+    // Check both the global variable and window property, and localStorage as fallback
+    let isEnabled = true;
+    if (window.asciiArtEnabled !== undefined) {
+        isEnabled = window.asciiArtEnabled;
+    } else if (typeof asciiArtEnabled !== 'undefined') {
+        isEnabled = asciiArtEnabled;
+    } else {
+        // Fallback to localStorage
+        const stored = localStorage.getItem('asciiArtEnabled');
+        isEnabled = stored !== 'false';
+        window.asciiArtEnabled = isEnabled;
+        asciiArtEnabled = isEnabled;
+    }
+    
+    if (!isEnabled) {
+        return; // ASCII art is disabled via toggle
+    }
+    
     // Skip displaying ASCII art if the bot is not enabled
     if (!botEnabled) {
         return;
@@ -2298,8 +2437,8 @@ function showAsciiArt(artType) {
         }
 
         const artMap = {
-            buy: [carAsciiArt, currencyAsciiArt[0], trainAsciiArt],
-            sell: [currencyAsciiArt[0], trainAsciiArt],
+            buy: [carAsciiArt, currencyAsciiArt[0], trainAsciiArt, compoundInterestAsciiArt, mintIdeasAsciiArt, dontGetFlockedAsciiArt],
+            sell: [currencyAsciiArt[0], trainAsciiArt, compoundInterestAsciiArt, mintIdeasAsciiArt, dontGetFlockedAsciiArt],
             travel: [planeAsciiArt]
         };
 
