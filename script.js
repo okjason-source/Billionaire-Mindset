@@ -444,10 +444,24 @@ function saveGameState() {
 
 // Function to update the buy and sell prices for the current product
 function updatePrices() {
+    if (!currentProduct || !products[currentProduct]) {
+        // Ensure currentProduct is set
+        if (Object.keys(products).length > 0) {
+            currentProduct = Object.keys(products)[0];
+        } else {
+            return; // No products available
+        }
+    }
+    
     const buyPrice = getRandomPrice(currentProduct);
-// Calculate sell price range
+    // Calculate sell price range
     const sellPriceMin = Math.floor(buyPrice * 0.5);
     const sellPriceMax = Math.floor(buyPrice * 2);
+
+    // Store currentPrice on the product object
+    if (products[currentProduct]) {
+        products[currentProduct].currentPrice = buyPrice;
+    }
 
     const buyPriceEl = document.getElementById('buy-price');
     const sellPriceMinEl = document.getElementById('sell-price-range');
@@ -594,11 +608,22 @@ function updateInventory() {
         // Calculate total inventory value
         let totalValue = 0;
         inventoryItems.forEach(([productKey, quantity]) => {
-            if (products[productKey]) {
+            if (products[productKey] && quantity > 0) {
                 // Use currentPrice if available, otherwise use average of min and max price
-                const currentPrice = products[productKey].currentPrice || 
-                    Math.floor((products[productKey].minPrice + products[productKey].maxPrice) / 2);
-                totalValue += quantity * currentPrice;
+                let currentPrice = products[productKey].currentPrice;
+                if (!currentPrice || isNaN(currentPrice)) {
+                    const minPrice = products[productKey].minPrice || 0;
+                    const maxPrice = products[productKey].maxPrice || 0;
+                    if (minPrice > 0 && maxPrice > 0) {
+                        currentPrice = Math.floor((minPrice + maxPrice) / 2);
+                    } else {
+                        currentPrice = 0; // Fallback to 0 if prices are invalid
+                    }
+                }
+                // Ensure currentPrice is a valid number
+                if (!isNaN(currentPrice) && isFinite(currentPrice)) {
+                    totalValue += quantity * currentPrice;
+                }
             }
         });
         
@@ -628,9 +653,21 @@ function updateInventory() {
                     const quantity = inventory[productKey] || 0;
                     
                     // Use currentPrice if available, otherwise use average of min and max price
-                    const currentPrice = products[productKey].currentPrice || 
-                        Math.floor((products[productKey].minPrice + products[productKey].maxPrice) / 2);
-                    const value = (quantity * currentPrice).toLocaleString();
+                    let currentPrice = products[productKey].currentPrice;
+                    if (!currentPrice || isNaN(currentPrice)) {
+                        const minPrice = products[productKey].minPrice || 0;
+                        const maxPrice = products[productKey].maxPrice || 0;
+                        if (minPrice > 0 && maxPrice > 0) {
+                            currentPrice = Math.floor((minPrice + maxPrice) / 2);
+                        } else {
+                            currentPrice = 0;
+                        }
+                    }
+                    // Ensure we have a valid number
+                    if (isNaN(currentPrice) || !isFinite(currentPrice)) {
+                        currentPrice = 0;
+                    }
+                    const value = quantity > 0 ? (quantity * currentPrice).toLocaleString() : '0';
                     
                     return `
                         <div class="inventory-item ${quantity > 0 ? 'has-inventory' : ''}">
