@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Audio source files (we use base64 encoded versions)
+*.mp3
+!audio/encoded-audio.js
+
+# Large encoded audio info (optional, can be regenerated)
+audio/encoded-audio-info.json
+
+# Service worker cache (browser generated)
+.cache/

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="img-src 'self' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://your-domain.com; style-src 'self' 'unsafe-inline'; media-src 'self' data:; default-src 'self';">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billionaire Mindset - Investment Empire</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="buckethat.png">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="buckethat.png">
+    
+   
+
+</head>
+<body>
+
+  <div
+    
+</div>
+
+    <div id="game-container">
+        <h1>Billionaire Mindset</h1>
+        <h1>Investment Empire</h1>
+        <h1>==========</h1>
+        <!-- Game Stats -->
+        <div id="stats">
+            <p>Bankroll: $<span id="bankroll">0</span></p>
+            <p>Days Remaining: <span id="days">30D:00HH</span></p>
+            <p>Security: <span id="guns">0</span></p>
+            <p>Location: <span id="city">Silicon Valley</span></p>
+        </div>
+
+        <!-- Player Inventory -->
+        <div id="products">
+            <div id="inventory">{}</div>
+        </div>
+
+        <!-- Market Controls -->
+        <div id="market">
+        	<h2></h2>
+    		<select id="product-dropdown"></select>
+    		<p>Buy Price: $<span id="buy-price">0</span></p>
+    		<p>Sell Price Range: $<span id="sell-price-range">0</span> to $<span id="sell-price-max">0</span></p>
+    		<input type="number" id="quantity" placeholder="Quantity" value="100" min="0" step="100">
+    		
+	</div>
+
+        <!-- Actions -->
+        <div id="actions">
+            
+            <button id="buy-button">Buy</button>
+    	    <button id="sell-button">Sell</button>
+            <button id="travel-button">Travel</button>
+            <button id="bank-button">Bank</button>
+            <button id="loan-button">Loan</button>
+            
+        </div>
+
+        <!-- Replace the existing event display sections with this single element -->
+        <div id="event-display"></div>
+
+    </div>
+
+    <!-- Log Container -->
+    <div id="log-container">
+        <h1>Console</h1>
+        <h1>==========</h1>
+        
+        <!-- Console Log Container -->
+        <div id="console-log-container">
+            <div class="console-header">
+                <h2>Time Log</h2>
+                <div class="console-controls">
+                    <div class="dropdown">
+                        <button id="console-actions" title="Console Actions">Actions ▼</button>
+                        <div class="dropdown-content">
+                            <a href="#" id="clear-logs">Clear Logs</a>
+                            <a href="#" id="reset-ai">Reset AI</a>
+                        </div>
+                    </div>
+                    <button id="toggle-ascii" title="Toggle ASCII art">ASCII: ON</button>
+                    <button id="toggle-console" title="Toggle console">Hide</button>
+                    <select id="log-filter">
+                        <option value="all">All Logs</option>
+                        <option value="bot">Bot Logs</option>
+                        <option value="transaction">Transaction Logs</option>
+                        <option value="event">Event Logs</option>
+                        <option value="learning">Learning Logs</option>
+                        <option value="error">Error Logs</option>
+                    </select>
+                </div>
+            </div>
+            <div id="console-log-content"></div>
+        </div>
+        
+        <!-- Game Over container inside log container -->
+        <div id="game-over" class="hidden">
+            <h2>GAME OVER</h2>
+            <button id="close-game-over" class="close-btn">×</button>
+            <div class="game-stats">
+                <div class="stats-section">
+                    <h3>Final Results</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Cash on Hand:</span>
+                        <span class="stat-value">$<span id="final-cash">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Bank Balance:</span>
+                        <span class="stat-value">$<span id="final-bank">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Outstanding Loans:</span>
+                        <span class="stat-value">$<span id="final-loans">0</span></span>
+                    </div>
+                    <div class="stat-row total-row">
+                        <span class="stat-label">Total Net Worth:</span>
+                        <span class="stat-value">$<span id="final-networth">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="stats-section">
+                    <h3>Gameplay Stats</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Cities Visited:</span>
+                        <span class="stat-value"><span id="cities-visited">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">IRS Audits Survived:</span>
+                        <span class="stat-value"><span id="raids-survived">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Market Manipulation Encounters:</span>
+                        <span class="stat-value"><span id="robber-encounters">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Successful Defenses:</span>
+                        <span class="stat-value"><span id="successful-defenses">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Trades:</span>
+                        <span class="stat-value"><span id="total-trades">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="stats-section" id="ai-stats-section">
+                    <h3>AI Performance</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">AI Trades:</span>
+                        <span class="stat-value"><span id="ai-trades">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Travel Points:</span>
+                        <span class="stat-value"><span id="travel-points">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Learning Rate:</span>
+                        <span class="stat-value"><span id="learning-rate">0</span></span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Exploration Rate:</span>
+                        <span class="stat-value"><span id="exploration-rate">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="ascii-art-container" class="hidden"></div>
+
+    <!-- Hidden pages for Bank and Loan -->
+    <div id="bank-page" class="hidden">
+        <div class="page-header">
+            <h1>Private Wealth Management</h1>
+            <button id="back-button" class="back-button">Return to Mansion</button>
+        </div>
+        
+        <div class="loan-status">
+            <div class="status-item">
+                <span class="status-label">Account Balance:</span>
+                <span class="status-value">$<span id="bank-balance">0</span></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Interest Rate:</span>
+                <span class="status-value">8% APY</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Account Status:</span>
+                <span class="status-value">Active</span>
+            </div>
+        </div>
+        
+        <div class="loan-warning">
+            <p>All deposits earn 8% APY interest, calculated and paid daily. Premium service guaranteed.</p>
+            <p>Remember: Your capital is safe with us, managed by the finest wealth advisors.</p>
+        </div>
+        
+        <div class="loan-actions">
+            <div class="loan-action-group">
+                <h2>Banking Operations</h2>
+                <div class="input-with-buttons">
+                    <input type="number" id="bank-amount" placeholder="Amount" value="10000" min="0" step="10000" class="neon-input">
+                    <div class="button-group">
+                        <button id="deposit-button" class="action-button pay-button">Deposit</button>
+                        <button id="withdraw-button" class="action-button loan-button">Withdraw</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loan-action-group">
+                <h2>Special</h2>
+                <button class="action-button mansion-button" onclick="location.href='action-trade-simulator/ats.html'">Visit Mansion</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loan-page" class="hidden">
+        <div class="page-header">
+            <h1>Investment Partners & Lenders</h1>
+            <button id="loan-back-button" class="back-button">Return to Mansion</button>
+        </div>
+        
+        <div class="loan-status">
+            <div class="status-item">
+                <span class="status-label">Current Debt:</span>
+                <span class="status-value">$<span id="loan-balance">0</span></span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Interest Rate:</span>
+                <span class="status-value">15% APY</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Security:</span>
+                <span class="status-value"><span id="guns-display">0</span> Guard(s)</span>
+            </div>
+        </div>
+        
+        <div class="loan-warning">
+            <p>All loans are subject to 15% APY interest, calculated and compounded daily.</p>
+            <p>Remember: Investment partners don't forget who owes them capital.</p>
+        </div>
+        
+        <div class="loan-actions">
+            <div class="loan-action-group">
+                <h2>Loan Operations</h2>
+                <div class="input-with-buttons">
+                    <input type="number" id="loan-amount" placeholder="Amount" value="10000" min="0" step="10000" class="neon-input">
+                    <div class="button-group">
+                        <button id="take-loan-button" class="action-button loan-button">Take Loan</button>
+                        <button id="pay-loan-button" class="action-button pay-button">Pay Loan</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loan-action-group">
+                <h2>Security</h2>
+                <button id="buy-gun-button" class="action-button gun-button">Hire Security ($500)</button>
+            </div>
+            
+            <div class="loan-action-group">
+                <h2>Special</h2>
+                <button id="go-to-mansion" class="action-button mansion-button" onclick="window.open('action-trade-simulator/ats.html', '_blank')">Visit Mansion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add ATS Container -->
+    <div id="ats-container" class="hidden">
+        <canvas id="ats-canvas"></canvas>
+    </div>
+    <button id="resume-game-button" class="hidden">Return to Trade</button>
+
+    <script type="module" src="audio/encoded-audio.js"></script>
+    <script src="backgroundMusic.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Register Service Worker for PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available, reload to use it
+                                    console.log('New service worker available, reloading...');
+                                    window.location.reload();
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+                
+                // Check for updates every hour
+                setInterval(() => {
+                    navigator.serviceWorker.getRegistration().then(registration => {
+                        if (registration) {
+                            registration.update();
+                        }
+                    });
+                }, 3600000); // 1 hour
+                
+                // Unregister old service workers on first load to clear old cache
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        // Check if this is an old service worker
+                        if (registration.scope.includes(window.location.origin)) {
+                            registration.update(); // Force update check
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Function to clear all caches (can be called from console if needed)
+        window.clearAppCache = function() {
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    return Promise.all(
+                        cacheNames.map(cacheName => {
+                            console.log('Deleting cache:', cacheName);
+                            return caches.delete(cacheName);
+                        })
+                    );
+                }).then(() => {
+                    console.log('All caches cleared. Reloading...');
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(registrations => {
+                            registrations.forEach(registration => {
+                                registration.unregister();
+                            });
+                            window.location.reload();
+                        });
+                    } else {
+                        window.location.reload();
+                    }
+                });
+            }
+        };
+    </script>
+</body>
+</html>
