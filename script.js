@@ -5452,8 +5452,19 @@ window.addEventListener('load', function() {
     setTimeout(() => {
         if (typeof window !== 'undefined' && window.backgroundMusic && city) {
             window.backgroundMusic.startMusicForLocation(city);
+            window.backgroundMusic.updateToggleUI();
         }
     }, 500);
+    
+    // Audio toggle button
+    const audioToggle = document.getElementById('audio-toggle');
+    if (audioToggle) {
+        audioToggle.addEventListener('click', function() {
+            if (typeof window !== 'undefined' && window.backgroundMusic) {
+                window.backgroundMusic.toggle();
+            }
+        });
+    }
     
     // Travel button
     document.getElementById('travel-button').addEventListener('click', travel);

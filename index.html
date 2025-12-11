@@ -84,8 +84,12 @@
                             <a href="#" id="reset-ai">Reset AI</a>
                         </div>
                     </div>
+                    <button id="audio-toggle" class="audio-toggle" title="Toggle background music">
+                        <span class="audio-indicator"></span>
+                        <span class="audio-label">ON</span>
+                    </button>
                     <button id="toggle-ascii" title="Toggle ASCII art">ASCII: ON</button>
-                    <button id="toggle-console" title="Toggle console">Hide</button>
+                    <button id="toggle-console" title="Toggle console">Show</button>
                     <select id="log-filter">
                         <option value="all">All Logs</option>
                         <option value="bot">Bot Logs</option>
@@ -96,7 +100,7 @@
                     </select>
                 </div>
             </div>
-            <div id="console-log-content"></div>
+            <div id="console-log-content" style="display: none;"></div>
         </div>
         
         <!-- Game Over container inside log container -->

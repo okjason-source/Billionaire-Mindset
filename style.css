@@ -877,6 +877,50 @@ input:focus, select:focus {
     padding-bottom: 3px;
 }
 
+/* Audio Toggle Button */
+.audio-toggle {
+    background: linear-gradient(145deg, #2a2a3e 0%, #1a1a2e 100%);
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.audio-toggle:hover {
+    background: linear-gradient(145deg, #3a3a4e 0%, #2a2a3e 100%);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.audio-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.audio-indicator.on {
+    background-color: #00ff00;
+    box-shadow: 0 0 6px #00ff00, 0 0 10px #00ff00;
+}
+
+.audio-indicator.off {
+    background-color: #666;
+    box-shadow: 0 0 3px #333;
+}
+
+.audio-label {
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
 .stat-row {
     display: flex;
     justify-content: space-between;

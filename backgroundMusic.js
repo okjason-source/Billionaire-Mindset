@@ -43,12 +43,16 @@ class BackgroundMusicManager {
         this.changeDelay = 1500; // 1.5 second delay before changing music
         this.userInteracted = false; // Track if user has interacted with the page
         this.pendingStart = null; // Store pending city to start music for
+        this.enabled = true; // Audio enabled/disabled state
         
         // Load encoded audio
         this.loadEncodedAudio();
         
         // Listen for user interaction to enable audio playback
         this.setupUserInteractionListener();
+        
+        // Initialize toggle UI
+        setTimeout(() => this.updateToggleUI(), 100);
     }
     
     /**
@@ -174,9 +178,11 @@ class BackgroundMusicManager {
     fadeIn(audio) {
         if (!audio) return;
         
-        // Only play if user has interacted
-        if (!this.userInteracted) {
-            console.log('[BackgroundMusic] Waiting for user interaction before playing audio');
+        // Only play if user has interacted and audio is enabled
+        if (!this.userInteracted || !this.enabled) {
+            if (!this.userInteracted) {
+                console.log('[BackgroundMusic] Waiting for user interaction before playing audio');
+            }
             return;
         }
         
@@ -193,7 +199,7 @@ class BackgroundMusicManager {
         });
         
         const startTime = Date.now();
-        const targetVolume = this.volume;
+        const targetVolume = this.enabled ? this.volume : 0;
         
         const fade = () => {
             const elapsed = Date.now() - startTime;
@@ -213,6 +219,11 @@ class BackgroundMusicManager {
      * Change music for a new location
      */
     changeMusicForLocation(city) {
+        // If audio is disabled, don't change music
+        if (!this.enabled) {
+            return;
+        }
+        
         // If user hasn't interacted yet, don't change music
         if (!this.userInteracted) {
             this.pendingStart = city;
@@ -279,6 +290,11 @@ class BackgroundMusicManager {
      * Start playing music for the initial location
      */
     startMusicForLocation(city) {
+        // If audio is disabled, don't start
+        if (!this.enabled) {
+            return;
+        }
+        
         if (!encodedAudio) {
             // Wait a bit and try again if audio isn't loaded yet (max 5 seconds)
             const maxAttempts = 50;
@@ -341,8 +357,60 @@ class BackgroundMusicManager {
      */
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
-        if (this.currentAudio) {
+        if (this.currentAudio && this.enabled) {
             this.currentAudio.volume = this.volume;
+        }
+    }
+    
+    /**
+     * Toggle audio on/off
+     */
+    toggle() {
+        this.enabled = !this.enabled;
+        
+        if (this.enabled) {
+            // Turn on - resume current music if it exists
+            if (this.currentAudio) {
+                this.currentAudio.volume = this.volume;
+                this.currentAudio.play().catch(error => {
+                    console.error('[BackgroundMusic] Error resuming audio:', error);
+                });
+            } else if (this.pendingStart) {
+                // Start pending music
+                const city = this.pendingStart;
+                this.pendingStart = null;
+                this.startMusicForLocation(city);
+            }
+        } else {
+            // Turn off - mute current audio
+            if (this.currentAudio) {
+                this.currentAudio.volume = 0;
+                this.currentAudio.pause();
+            }
+        }
+        
+        this.updateToggleUI();
+        return this.enabled;
+    }
+    
+    /**
+     * Update the toggle button UI
+     */
+    updateToggleUI() {
+        const toggle = document.getElementById('audio-toggle');
+        if (toggle) {
+            const indicator = toggle.querySelector('.audio-indicator');
+            const label = toggle.querySelector('.audio-label');
+            
+            if (this.enabled) {
+                indicator.classList.add('on');
+                indicator.classList.remove('off');
+                if (label) label.textContent = 'ON';
+            } else {
+                indicator.classList.add('off');
+                indicator.classList.remove('on');
+                if (label) label.textContent = 'OFF';
+            }
         }
     }
 }
