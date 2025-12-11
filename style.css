@@ -361,15 +361,105 @@ input:focus, select:focus {
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+#products {
+    margin: 10px auto;
+    padding: 10px;
+    position: relative;
+}
+
+#inventory {
+    position: relative;
+    max-width: 100%;
+}
+
+.mascot-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mascot-left {
+    left: 10px;
+    animation: step-left 6s steps(4, end) infinite;
+}
+
+.mascot-right {
+    right: 10px;
+    animation: step-right 6s steps(4, end) infinite;
+}
+
+@keyframes step-left {
+    0% {
+        transform: translateY(-50%) translateX(0);
+    }
+    25% {
+        transform: translateY(-50%) translateX(40px);
+    }
+    50% {
+        transform: translateY(-50%) translateX(80px);
+    }
+    75% {
+        transform: translateY(-50%) translateX(40px);
+    }
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+@keyframes step-right {
+    0% {
+        transform: translateY(-50%) translateX(0);
+    }
+    25% {
+        transform: translateY(-50%) translateX(-50px);
+    }
+    50% {
+        transform: translateY(-50%) translateX(-100px);
+    }
+    75% {
+        transform: translateY(-50%) translateX(-50px);
+    }
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+.mascot-sprite {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    image-rendering: -moz-crisp-edges;
+    width: auto;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+    pointer-events: none;
+}
+
+#money-mascot .mascot-sprite {
+    width: 80px;
+    height: 120px;
+}
+
+#ostrich-mascot .mascot-sprite {
+    width: 120px;
+    height: 160px;
+}
+
 #inventory, #event-log {
     background: linear-gradient(145deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
     color: #FFD700;
     margin: 10px auto;
-    padding: 10px;
+    padding: 10px 140px 10px 100px; /* Extra padding on sides for larger mascots */
     border: 2px solid #FFD700;
     border-radius: 8px;
     min-height: 50px;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.3);
+    position: relative; /* Ensure mascots can be positioned absolutely */
+    overflow: visible; /* Allow mascots to be visible outside if needed */
 }
 
 #event-log-container {
