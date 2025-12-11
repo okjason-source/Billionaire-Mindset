@@ -402,8 +402,20 @@ let gameState = {
 
 // Function to get a random price between min and max for the selected product
 function getRandomPrice(product, bankroll) {
-    const minPrice = products[product].minPrice;
-    const maxPrice = products[product].maxPrice;
+    // Safety check: ensure product exists
+    if (!product || !products[product]) {
+        console.error(`[PRICE ERROR] Invalid product: ${product}`);
+        return 0;
+    }
+    
+    const minPrice = products[product].minPrice || 0;
+    const maxPrice = products[product].maxPrice || 0;
+    
+    if (minPrice <= 0 || maxPrice <= 0 || minPrice > maxPrice) {
+        console.error(`[PRICE ERROR] Invalid price range for ${product}: min=${minPrice}, max=${maxPrice}`);
+        return 0;
+    }
+    
     let randomPrice = Math.floor(Math.random() * (maxPrice - minPrice + 1)) + minPrice;
 
     // Store price in memory
@@ -3984,6 +3996,13 @@ class TradingBot {
     // Helper method to complete the buying process after price generation
     _completeBuy(productKey, callback, isExploration = false) {
         try {
+            // Safety check: ensure product exists
+            if (!productKey || !products[productKey]) {
+                console.error(`[BOT BUY ERROR] Invalid product key: ${productKey}`);
+                if (callback) callback(false);
+                return false;
+            }
+            
             // Get current product price and information
             const buyPrice = parseInt(document.getElementById('buy-price').textContent.replace(/[^0-9]/g, ''));
             let buyQuantity = parseInt(document.getElementById('quantity').value);
@@ -4250,6 +4269,13 @@ class TradingBot {
     
     // Helper method to complete the selling process after product switch
     _completeSell(productKey, callback, isExploration = false) {
+        // Safety check: ensure product exists
+        if (!productKey || !products[productKey]) {
+            console.error(`[BOT SELL ERROR] Invalid product key: ${productKey}`);
+            if (callback) callback(false);
+            return;
+        }
+        
         // Check both inventory systems and sync them if needed
         const regularInventory = inventory[productKey] || 0;
         const gameStateInventory = gameState.inventory[productKey] || 0;
@@ -4393,11 +4419,20 @@ class TradingBot {
                 const oldCash = gameState.cash;
                 const oldInventory = gameState.inventory[productKey];
                 
+                // Safety check: ensure product exists
+                if (!products[productKey]) {
+                    console.error(`[BOT SELL ERROR] Product ${productKey} not found in products object`);
+                    if (callback) callback(false);
+                    return;
+                }
+                
                 // Determine if this is a high-value or exceptional sale
-                const isExceptionalSale = sellPrice > (products[productKey].maxPrice * 0.8);
+                const maxPrice = products[productKey].maxPrice || 0;
+                const isExceptionalSale = maxPrice > 0 && sellPrice > (maxPrice * 0.8);
                 
                 // Log before attempting the sell
-                console.log(`[BOT] Selling ${quantityToSell} ${products[productKey].name} at $${sellPrice}, expected revenue: $${expectedRevenue.toLocaleString()}`);
+                const productName = products[productKey].name || productKey;
+                console.log(`[BOT] Selling ${quantityToSell} ${productName} at $${sellPrice}, expected revenue: $${expectedRevenue.toLocaleString()}`);
                 
                 // Execute the standard sell function instead of updating directly
                 const success = sellProduct();
