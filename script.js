@@ -2593,9 +2593,15 @@ class TradingBot {
         }
         
         // Set up a new interval to perform actions
+        // Note: This continues even when tab is in background
         this.actionInterval = setInterval(() => {
             // Skip if bot is disabled
             if (!botEnabled) {
+                return;
+            }
+            
+            // Check if game is still active
+            if (gameState && gameState.gameActive === false) {
                 return;
             }
             
@@ -2605,18 +2611,22 @@ class TradingBot {
                 return;
             }
             
-            // Perform an action
+            // Perform an action (works even when tab is hidden)
             this.performAction();
             
-            // Update strategy display after each action
-            updateStrategyDisplay();
+            // Update strategy display after each action (only if tab is visible)
+            if (!document.hidden) {
+                updateStrategyDisplay();
+            }
             
             // Adapt strategy periodically
             this.actionCounter++;
             if (this.actionCounter % 5 === 0 && typeof this.adaptStrategy === 'function') {
                 this.adaptStrategy();
-                // Update display again after strategy adaptation
-                updateStrategyDisplay();
+                // Update display again after strategy adaptation (only if tab is visible)
+                if (!document.hidden) {
+                    updateStrategyDisplay();
+                }
             }
             
             // Save state occasionally
@@ -2625,7 +2635,7 @@ class TradingBot {
             }
         }, 1000); // Check for actions each second
         
-        console.log('[BOT] Trading started');
+        console.log('[BOT] Trading started (will continue in background)');
     }
     
     stopTrading() {
@@ -5393,6 +5403,14 @@ function showGameOver() {
     if (inventoryValue > 0) {
         console.log("[GAME OVER] Unsold inventory value (not counted): $" + inventoryValue.toLocaleString());
     }
+    
+    // Check for auto-restart if bot was enabled
+    if (window.autoRestartEnabled && botEnabled && tradingBot) {
+        console.log("[GAME OVER] Auto-restart enabled, restarting in 3 seconds...");
+        setTimeout(() => {
+            restartGame();
+        }, 3000);
+    }
 }
 
 // Add helper function to calculate total inventory value
@@ -5418,6 +5436,22 @@ let successfulDefensesCount = 0;
 let totalTradesCount = 0;
 
 // Initialize event handlers
+// Ensure bot continues when tab is in background
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('[BOT] Tab hidden - bot will continue running in background');
+    } else {
+        console.log('[BOT] Tab visible - updating UI');
+        // Update UI when tab becomes visible again
+        if (typeof updateUI === 'function') {
+            updateUI();
+        }
+        if (typeof updateStrategyDisplay === 'function') {
+            updateStrategyDisplay();
+        }
+    }
+});
+
 window.addEventListener('load', function() {
     // Disable the bank and loan buttons since they're not working correctly
     const bankButton = document.getElementById('bank-button');
@@ -5494,6 +5528,47 @@ window.addEventListener('load', function() {
         // This ensures only the console remains visible
     });
     
+    // Restart game button
+    const restartBtn = document.getElementById('restart-game-btn');
+    if (restartBtn) {
+        restartBtn.addEventListener('click', function() {
+            restartGame();
+        });
+    }
+    
+    // Auto-restart toggle
+    const autoRestartToggle = document.getElementById('auto-restart-toggle');
+    const autoRestartLabel = document.getElementById('auto-restart-label');
+    if (autoRestartToggle) {
+        // Load saved auto-restart preference
+        const autoRestartEnabled = localStorage.getItem('autoRestartEnabled') === 'true';
+        window.autoRestartEnabled = autoRestartEnabled;
+        updateAutoRestartUI();
+        
+        autoRestartToggle.addEventListener('click', function() {
+            window.autoRestartEnabled = !window.autoRestartEnabled;
+            localStorage.setItem('autoRestartEnabled', window.autoRestartEnabled.toString());
+            updateAutoRestartUI();
+        });
+    }
+    
+    function updateAutoRestartUI() {
+        const autoRestartLabel = document.getElementById('auto-restart-label');
+        if (autoRestartLabel) {
+            autoRestartLabel.textContent = `Auto-Restart: ${window.autoRestartEnabled ? 'ON' : 'OFF'}`;
+        }
+        const autoRestartToggle = document.getElementById('auto-restart-toggle');
+        if (autoRestartToggle) {
+            if (window.autoRestartEnabled) {
+                autoRestartToggle.style.background = 'linear-gradient(145deg, #FFD700 0%, #FFA500 100%)';
+                autoRestartToggle.style.color = '#000';
+            } else {
+                autoRestartToggle.style.background = 'linear-gradient(145deg, #2a2a3e 0%, #1a1a2e 100%)';
+                autoRestartToggle.style.color = '#FFD700';
+            }
+        }
+    }
+    
     // Initialize loan page controls
     initLoanPage();
     
@@ -5519,6 +5594,132 @@ function hideGameOver() {
     if (gameContainer) {
         gameContainer.classList.add('hidden');
     }
+}
+
+// Function to restart the game
+function restartGame() {
+    console.log("[GAME] Restarting game...");
+    
+    // Hide game over screen
+    const gameOverElement = document.getElementById('game-over');
+    if (gameOverElement) {
+        gameOverElement.classList.add('hidden');
+        gameOverElement.classList.remove('showing');
+    }
+    
+    // Show game container
+    const gameContainer = document.getElementById('game-container');
+    if (gameContainer) {
+        gameContainer.classList.remove('hidden');
+    }
+    
+    // Clear any existing intervals
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+    }
+    if (window.gameTimerInterval) {
+        clearInterval(window.gameTimerInterval);
+        window.gameTimerInterval = null;
+    }
+    
+    // Stop bot if running
+    if (tradingBot && tradingBot.actionInterval) {
+        tradingBot.stopTrading();
+    }
+    
+    // Reset game state variables
+    city = "Silicon Valley";
+    totalSecondsRemaining = 30 * 86400; // 30 days in seconds
+    bankroll = 1000000;
+    inventory = {};
+    bankBalance = 0;
+    loanBalance = 0;
+    guns = 0;
+    
+    // Reset game statistics
+    citiesVisitedCount = 0;
+    visitedCities = [];
+    raidsSurvivedCount = 0;
+    robberEncountersCount = 0;
+    successfulDefensesCount = 0;
+    totalTradesCount = 0;
+    
+    // Reset day message index
+    if (typeof dayMessageIndex !== 'undefined') {
+        dayMessageIndex = 0;
+    }
+    
+    // Initialize starting city as visited
+    visitedCities.push("Silicon Valley");
+    citiesVisitedCount = 1;
+    
+    // Reset game state object
+    if (gameState) {
+        gameState.gameActive = true;
+        gameState.city = city;
+        gameState.bankroll = bankroll;
+        gameState.inventory = inventory;
+        gameState.bankBalance = bankBalance;
+        gameState.loanBalance = loanBalance;
+        gameState.guns = guns;
+    }
+    
+    // Initialize game statistics tracking
+    gameStats = {
+        policeRaids: 0,
+        robberEncounters: 0,
+        successfulDefenses: 0,
+        citiesVisited: 1,
+        totalTrades: 0
+    };
+    
+    // Reset the bot's exploration rate for the new game
+    if (tradingBot && typeof tradingBot.resetForNewGame === 'function') {
+        tradingBot.resetForNewGame();
+        console.log('[GAME] Reset bot exploration rate for new game');
+    }
+    
+    // Initialize product dropdown
+    if (typeof initProductDropdown === 'function') {
+        initProductDropdown();
+    }
+    
+    // Start the game timer
+    if (typeof startGameTimerDisplay === 'function') {
+        startGameTimerDisplay();
+    }
+    
+    // Start the game interval
+    if (!gameInterval) {
+        gameInterval = setInterval(trackDays, 1000);
+    }
+    
+    // Update UI
+    if (typeof updatePrices === 'function') {
+        updatePrices();
+    }
+    if (typeof updateUI === 'function') {
+        updateUI();
+    }
+    
+    // Start background music for new location
+    if (typeof window !== 'undefined' && window.backgroundMusic && city) {
+        window.backgroundMusic.startMusicForLocation(city);
+    }
+    
+    // Restore bot if it was enabled
+    if (botEnabled && tradingBot) {
+        // Small delay to ensure game is initialized
+        setTimeout(() => {
+            if (tradingBot && !tradingBot.actionInterval) {
+                tradingBot.startTrading();
+                console.log("[GAME] Bot restarted with new game");
+            }
+        }, 1000);
+    }
+    
+    console.log("[GAME] Game restarted successfully");
 }
 
 // Function to reset AI learning data
