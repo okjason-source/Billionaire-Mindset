@@ -2048,10 +2048,6 @@ window.onload = function () {
     // Load initial game state first (this will handle bot initialization if needed)
     loadGameState();
     
-    // Check if auto-restart is enabled (load from localStorage)
-    const autoRestartEnabled = localStorage.getItem('autoRestartEnabled') === 'true';
-    window.autoRestartEnabled = autoRestartEnabled;
-    
     // Only initialize bot if it wasn't loaded from game state
     if (!tradingBot) {
         // Try to load bot knowledge
@@ -2085,26 +2081,31 @@ window.onload = function () {
     createBotControls();
     updateStrategyDisplay();
     
-    // If auto-restart is enabled, automatically enable bot
-    if (window.autoRestartEnabled && !botEnabled) {
-        botEnabled = true;
-        const toggleButton = document.getElementById('bot-toggle');
-        if (toggleButton) {
-            toggleButton.textContent = 'Disable AI';
-            toggleButton.className = 'bot-enabled';
-        }
-        updateBotStatusIndicator(true);
-        console.log("[GAME] Auto-restart enabled - bot enabled automatically on game start");
-    }
-    
-    // Start bot if it's enabled (regardless of auto-restart setting)
-    if (botEnabled && tradingBot) {
+    // Start bot if it's enabled (bot enabled = auto-restart on)
+    // Use a longer delay to ensure everything is initialized
+    if (botEnabled) {
         setTimeout(() => {
+            // Ensure tradingBot exists
+            if (!tradingBot) {
+                console.warn("[GAME] Bot enabled but tradingBot not found, creating new instance");
+                tradingBot = new TradingBot({
+                    explorationRate: 0.5639537603766785,
+                    explorationDecay: 0.998,
+                    learningRate: 0.15
+                });
+                window.bot = tradingBot;
+            }
+            
+            // Start trading if not already started
             if (tradingBot && !tradingBot.actionInterval) {
                 tradingBot.startTrading();
                 console.log("[GAME] Bot started automatically (botEnabled=" + botEnabled + ")");
+            } else if (tradingBot && tradingBot.actionInterval) {
+                console.log("[GAME] Bot already running");
+            } else {
+                console.warn("[GAME] Bot enabled but could not start trading");
             }
-        }, 1000);
+        }, 1500); // Increased delay to ensure all initialization is complete
     }
     
     trackDays();
@@ -3866,7 +3867,7 @@ class TradingBot {
     calculateInventoryValue() {
         let total = 0;
         for (const [productKey, quantity] of Object.entries(inventory)) {
-            if (quantity > 0) {
+            if (quantity > 0 && products[productKey]) {
                 const memory = this.highLowPriceMemory.get(productKey);
                 const price = memory ? memory.lastPrice : 
                     (products[productKey].minPrice + products[productKey].maxPrice) / 2;
@@ -5451,37 +5452,9 @@ function showGameOver() {
         console.log("[GAME OVER] Unsold inventory value (not counted): $" + inventoryValue.toLocaleString());
     }
     
-    // Check for auto-restart - if enabled, enable bot and restart
-    if (window.autoRestartEnabled) {
-        // Enable bot if not already enabled
-        if (!botEnabled && tradingBot) {
-            botEnabled = true;
-            const toggleButton = document.getElementById('bot-toggle');
-            if (toggleButton) {
-                toggleButton.textContent = 'Disable AI';
-                toggleButton.className = 'bot-enabled';
-            }
-            updateBotStatusIndicator(true);
-            console.log("[GAME OVER] Auto-restart enabled - bot enabled automatically");
-        }
-        // Ensure bot is created if it doesn't exist
-        if (!tradingBot) {
-            tradingBot = new TradingBot({
-                explorationRate: 0.5639537603766785,
-                explorationDecay: 0.998,
-                learningRate: 0.15
-            });
-            window.bot = tradingBot;
-            botEnabled = true;
-            const toggleButton = document.getElementById('bot-toggle');
-            if (toggleButton) {
-                toggleButton.textContent = 'Disable AI';
-                toggleButton.className = 'bot-enabled';
-            }
-            updateBotStatusIndicator(true);
-            console.log("[GAME OVER] Auto-restart enabled - bot created and enabled automatically");
-        }
-        console.log("[GAME OVER] Auto-restart enabled, restarting in 3 seconds...");
+    // Auto-restart if bot is enabled (bot playing = auto-restart on)
+    if (botEnabled && tradingBot) {
+        console.log("[GAME OVER] Bot is enabled, auto-restarting in 3 seconds...");
         setTimeout(() => {
             restartGame();
         }, 3000);
@@ -5611,39 +5584,6 @@ window.addEventListener('load', function() {
         });
     }
     
-    // Auto-restart toggle
-    const autoRestartToggle = document.getElementById('auto-restart-toggle');
-    const autoRestartLabel = document.getElementById('auto-restart-label');
-    if (autoRestartToggle) {
-        // Load saved auto-restart preference
-        const autoRestartEnabled = localStorage.getItem('autoRestartEnabled') === 'true';
-        window.autoRestartEnabled = autoRestartEnabled;
-        updateAutoRestartUI();
-        
-        autoRestartToggle.addEventListener('click', function() {
-            window.autoRestartEnabled = !window.autoRestartEnabled;
-            localStorage.setItem('autoRestartEnabled', window.autoRestartEnabled.toString());
-            updateAutoRestartUI();
-        });
-    }
-    
-    function updateAutoRestartUI() {
-        const autoRestartLabel = document.getElementById('auto-restart-label');
-        if (autoRestartLabel) {
-            autoRestartLabel.textContent = `Auto-Restart: ${window.autoRestartEnabled ? 'ON' : 'OFF'}`;
-        }
-        const autoRestartToggle = document.getElementById('auto-restart-toggle');
-        if (autoRestartToggle) {
-            if (window.autoRestartEnabled) {
-                autoRestartToggle.style.background = 'linear-gradient(145deg, #FFD700 0%, #FFA500 100%)';
-                autoRestartToggle.style.color = '#000';
-            } else {
-                autoRestartToggle.style.background = 'linear-gradient(145deg, #2a2a3e 0%, #1a1a2e 100%)';
-                autoRestartToggle.style.color = '#FFD700';
-            }
-        }
-    }
-    
     // Initialize loan page controls
     initLoanPage();
     
@@ -5707,7 +5647,11 @@ function restartGame() {
     city = "Silicon Valley";
     totalSecondsRemaining = 30 * 86400; // 30 days in seconds
     bankroll = 1000000;
-    inventory = {};
+    // Initialize inventory with all products set to 0
+    inventory = Object.keys(products).reduce((acc, p) => {
+        acc[p] = 0;
+        return acc;
+    }, {});
     bankBalance = 0;
     loanBalance = 0;
     guns = 0;
@@ -5783,31 +5727,7 @@ function restartGame() {
         window.backgroundMusic.startMusicForLocation(city);
     }
     
-    // If auto-restart is enabled, automatically enable bot
-    if (window.autoRestartEnabled) {
-        if (!botEnabled) {
-            botEnabled = true;
-            const toggleButton = document.getElementById('bot-toggle');
-            if (toggleButton) {
-                toggleButton.textContent = 'Disable AI';
-                toggleButton.className = 'bot-enabled';
-            }
-            updateBotStatusIndicator(true);
-            console.log("[GAME] Auto-restart enabled - bot enabled automatically on restart");
-        }
-        // Ensure bot exists
-        if (!tradingBot) {
-            tradingBot = new TradingBot({
-                explorationRate: 0.5639537603766785,
-                explorationDecay: 0.998,
-                learningRate: 0.15
-            });
-            window.bot = tradingBot;
-            console.log("[GAME] Auto-restart enabled - bot created automatically on restart");
-        }
-    }
-    
-    // Start bot if it's enabled
+    // Start bot if it's enabled (bot enabled = auto-restart on)
     if (botEnabled && tradingBot) {
         // Small delay to ensure game is initialized
         setTimeout(() => {
