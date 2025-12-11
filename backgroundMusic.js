@@ -264,13 +264,56 @@ class BackgroundMusicManager {
         
         // Create new audio element
         const newAudio = new Audio(encodedAudio[newMusicKey]);
-        newAudio.loop = true;
         newAudio.volume = 0;
+        newAudio.preload = 'auto'; // Preload for smoother playback
+        
+        // Disable native loop attribute - handle looping manually for seamless playback
+        // The native loop can cause gaps, so we'll restart manually
+        newAudio.loop = false;
+        
+        // Set up seamless looping to prevent gaps
+        // Restart immediately when audio ends for continuous playback
+        const endedHandler = () => {
+            if (this.currentAudio === newAudio && this.enabled) {
+                // Restart immediately for seamless loop
+                newAudio.currentTime = 0;
+                newAudio.play().catch(error => {
+                    console.error('[BackgroundMusic] Error restarting loop:', error);
+                });
+            }
+        };
+        
+        newAudio.addEventListener('ended', endedHandler);
+        
+        // Also use timeupdate to restart slightly before the end for even smoother looping
+        // This prevents any gap that might occur at the very end
+        const loopHandler = () => {
+            if (newAudio.duration && newAudio.currentTime > 0) {
+                const timeRemaining = newAudio.duration - newAudio.currentTime;
+                // Restart when very close to end (0.02 seconds) for seamless transition
+                if (timeRemaining < 0.02 && timeRemaining > 0) {
+                    newAudio.currentTime = 0;
+                }
+            }
+        };
+        
+        newAudio.addEventListener('timeupdate', loopHandler);
+        
+        // Store handlers for cleanup
+        newAudio._loopHandler = loopHandler;
+        newAudio._endedHandler = endedHandler;
         
         // Fade out old audio, then fade in new audio
         this.fadeOut(oldAudio, () => {
             // Clean up old audio
             if (oldAudio) {
+                // Remove event listeners before cleaning up
+                if (oldAudio._loopHandler) {
+                    oldAudio.removeEventListener('timeupdate', oldAudio._loopHandler);
+                }
+                if (oldAudio._endedHandler) {
+                    oldAudio.removeEventListener('ended', oldAudio._endedHandler);
+                }
                 oldAudio.src = '';
                 oldAudio.load();
             }
