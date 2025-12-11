@@ -380,6 +380,13 @@ input:focus, select:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Prevent layout shifts */
+    will-change: transform;
+    contain: layout style paint;
+    /* Fixed dimensions to prevent reflow */
+    min-width: 120px;
+    min-height: 160px;
+    overflow: visible;
 }
 
 .mascot-left {
@@ -432,21 +439,111 @@ input:focus, select:focus {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     image-rendering: -moz-crisp-edges;
-    width: auto;
-    height: auto;
     display: block;
     filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
     pointer-events: none;
+    /* Prevent layout shifts */
+    flex-shrink: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+#money-mascot {
+    min-width: 80px;
+    min-height: 120px;
 }
 
 #money-mascot .mascot-sprite {
     width: 80px;
     height: 120px;
+    max-width: 80px;
+    max-height: 120px;
+}
+
+#ostrich-mascot {
+    min-width: 120px;
+    min-height: 160px;
 }
 
 #ostrich-mascot .mascot-sprite {
     width: 120px;
     height: 160px;
+    max-width: 120px;
+    max-height: 160px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .mascot-container {
+        /* Reduce animation on mobile to prevent issues */
+        animation-duration: 8s;
+        /* Smaller fixed dimensions on mobile */
+        min-width: 60px;
+        min-height: 100px;
+    }
+    
+    #money-mascot {
+        min-width: 60px;
+        min-height: 90px;
+    }
+    
+    #money-mascot .mascot-sprite {
+        width: 60px;
+        height: 90px;
+        max-width: 60px;
+        max-height: 90px;
+    }
+    
+    #ostrich-mascot {
+        min-width: 90px;
+        min-height: 120px;
+    }
+    
+    #ostrich-mascot .mascot-sprite {
+        width: 90px;
+        height: 120px;
+        max-width: 90px;
+        max-height: 120px;
+    }
+    
+    /* Reduce movement distance on mobile */
+    @keyframes step-left {
+        0% {
+            transform: translateY(-50%) translateX(0);
+        }
+        25% {
+            transform: translateY(-50%) translateX(20px);
+        }
+        50% {
+            transform: translateY(-50%) translateX(40px);
+        }
+        75% {
+            transform: translateY(-50%) translateX(20px);
+        }
+        100% {
+            transform: translateY(-50%) translateX(0);
+        }
+    }
+    
+    @keyframes step-right {
+        0% {
+            transform: translateY(-50%) translateX(0);
+        }
+        25% {
+            transform: translateY(-50%) translateX(-25px);
+        }
+        50% {
+            transform: translateY(-50%) translateX(-50px);
+        }
+        75% {
+            transform: translateY(-50%) translateX(-25px);
+        }
+        100% {
+            transform: translateY(-50%) translateX(0);
+        }
+    }
 }
 
 #inventory, #event-log {
@@ -460,6 +557,15 @@ input:focus, select:focus {
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.3);
     position: relative; /* Ensure mascots can be positioned absolutely */
     overflow: visible; /* Allow mascots to be visible outside if needed */
+    /* Prevent layout shifts */
+    contain: layout style;
+}
+
+/* Mobile adjustments for inventory padding */
+@media (max-width: 768px) {
+    #inventory, #event-log {
+        padding: 10px 80px 10px 70px; /* Reduced padding on mobile */
+    }
 }
 
 #event-log-container {
